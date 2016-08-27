@@ -1,8 +1,6 @@
 package com.github.rpsqlparser;
 
 import android.content.res.AssetManager;
-import android.support.annotation.NonNull;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -13,7 +11,7 @@ import java.util.Arrays;
 
 public class Assets {
 
-    public static boolean existsFile(@NonNull String fileName, @NonNull String path, @NonNull AssetManager assetManager) throws IOException {
+    public static boolean existsFile(String fileName,  String path, AssetManager assetManager) throws IOException {
         if (fileName.isEmpty()) {
             throw new IllegalArgumentException("Name of file is emtry");
         }
