@@ -1,8 +1,6 @@
 package com.github.rpsqlparser;
 
 import android.content.res.AssetManager;
-import android.support.annotation.NonNull;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -35,12 +33,12 @@ public class SQLParser {
         return sqlIns;
     }
 
-    private static List<String> parseSqlFile(@NonNull InputStream is) throws IOException {
+    private static List<String> parseSqlFile(InputStream is) throws IOException {
         String script = removeComments(is);
         return splitSqlScript(script, ';');
     }
 
-    private static String removeComments(@NonNull InputStream is) throws IOException {
+    private static String removeComments(InputStream is) throws IOException {
 
         if (is == null) {
             throw new NullPointerException("InputStream == null");
@@ -91,7 +89,7 @@ public class SQLParser {
         return sql.toString();
     }
 
-    private static List<String> splitSqlScript(@NonNull String script, char delim) {
+    private static List<String> splitSqlScript(String script, char delim) {
         if (script.isEmpty()) {
             throw new IllegalArgumentException("script file is emtry");
         }
