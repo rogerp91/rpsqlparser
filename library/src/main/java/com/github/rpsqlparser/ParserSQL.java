@@ -1,6 +1,7 @@
 package com.github.rpsqlparser;
 
 import android.content.res.AssetManager;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,25 +13,24 @@ import java.util.List;
  * Created by Roger Patiño on 26/08/2016.
  */
 
-public class SQLParser {
+public class ParserSQL {
 
     public static List<String> parseSqlFile(String sqlFile, AssetManager assetManager) throws IOException {
-        if (sqlFile.isEmpty()) {
-            throw new IllegalArgumentException("SQL file is emtry");
+        if (!sqlFile.isEmpty()) {
+            if (assetManager == null) {
+                throw new NullPointerException("assetManager == null");
+            }
+            List<String> sqlIns = null;
+            InputStream is = assetManager.open(sqlFile);
+            try {
+                sqlIns = parseSqlFile(is);
+            } finally {
+                is.close();
+            }
+            return sqlIns;
+        } else {
+            throw new IllegalArgumentException("File SQL is emtry");
         }
-
-        if (assetManager == null) {
-            throw new NullPointerException("assetManager == null");
-        }
-
-        List<String> sqlIns = null;
-        InputStream is = assetManager.open(sqlFile);
-        try {
-            sqlIns = parseSqlFile(is);
-        } finally {
-            is.close();
-        }
-        return sqlIns;
     }
 
     private static List<String> parseSqlFile(InputStream is) throws IOException {
@@ -39,11 +39,9 @@ public class SQLParser {
     }
 
     private static String removeComments(InputStream is) throws IOException {
-
-        if (is == null) {
+        if (null == is) {
             throw new NullPointerException("InputStream == null");
         }
-
         StringBuilder sql = new StringBuilder();
 
         InputStreamReader isReader = new InputStreamReader(is);
@@ -90,30 +88,31 @@ public class SQLParser {
     }
 
     private static List<String> splitSqlScript(String script, char delim) {
-        if (script.isEmpty()) {
+        if (!script.isEmpty()) {
+            List<String> statements = new ArrayList<>();
+            StringBuilder sb = new StringBuilder();
+            boolean inLiteral = false;
+            char[] content = script.toCharArray();
+            for (int i = 0; i < script.length(); i++) {
+                if (content[i] == '\'') {
+                    inLiteral = !inLiteral;
+                }
+                if (content[i] == delim && !inLiteral) {
+                    if (sb.length() > 0) {
+                        statements.add(sb.toString().trim());
+                        sb = new StringBuilder();
+                    }
+                } else {
+                    sb.append(content[i]);
+                }
+            }
+            if (sb.length() > 0) {
+                statements.add(sb.toString().trim());
+            }
+            return statements;
+        } else {
             throw new IllegalArgumentException("script file is emtry");
         }
-        List<String> statements = new ArrayList<>();
-        StringBuilder sb = new StringBuilder();
-        boolean inLiteral = false;
-        char[] content = script.toCharArray();
-        for (int i = 0; i < script.length(); i++) {
-            if (content[i] == '\'') {
-                inLiteral = !inLiteral;
-            }
-            if (content[i] == delim && !inLiteral) {
-                if (sb.length() > 0) {
-                    statements.add(sb.toString().trim());
-                    sb = new StringBuilder();
-                }
-            } else {
-                sb.append(content[i]);
-            }
-        }
-        if (sb.length() > 0) {
-            statements.add(sb.toString().trim());
-        }
-        return statements;
     }
 
 }
